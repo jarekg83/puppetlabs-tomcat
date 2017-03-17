@@ -36,9 +36,7 @@ define tomcat::config::context::resources (
       $set_additional_attributes = undef
     }
 
-    $changes = delete_undef_values(flatten([
-      $set_additional_attributes,
-    ]))
+    $changes = delete_undef_values(flatten($set_additional_attributes))
   }
 
   augeas { "context-${catalina_base}-resources-${name}":
