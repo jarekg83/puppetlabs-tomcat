@@ -16,11 +16,8 @@
 # - An optional array of $attributes_to_remove from the Connector.
 define tomcat::config::context::resources (
   $ensure                = 'present',
-  $resources_name         = $name,
-  $resources_type         = undef,
   $catalina_base         = $::tomcat::catalina_home,
   $additional_attributes = {},
-  $attributes_to_remove  = [],
 ) {
   if versioncmp($::augeasversion, '1.0.0') < 0 {
     fail('Server configurations require Augeas >= 1.0.0')
@@ -28,42 +25,19 @@ define tomcat::config::context::resources (
 
   validate_re($ensure, '^(present|absent|true|false)$')
 
-  if $resources_name {
-    $_resources_name = $resources_name
-  } else {
-    $_resources_name = $name
-  }
-
   $base_path = "Context/Resources[#attribute/name='${_resources_name}']"
 
   if $ensure =~ /^(absent|false)$/ {
     $changes = "rm ${base_path}"
   } else {
-    # (MODULES-3353) does this need to be quoted?
-    $set_name = "set ${base_path}/#attribute/name ${_resources_name}"
-    if $resources_type {
-      $set_type = "set ${base_path}/#attribute/type ${resources_type}"
-    } else {
-      $set_type = undef
-    }
-
     if ! empty($additional_attributes) {
       $set_additional_attributes = suffix(prefix(join_keys_to_values($additional_attributes, " '"), "set ${base_path}/#attribute/"), "'")
     } else {
       $set_additional_attributes = undef
     }
-    if ! empty(any2array($attributes_to_remove)) {
-      $rm_attributes_to_remove = prefix(any2array($attributes_to_remove), "rm ${base_path}/#attribute/")
-    } else {
-      $rm_attributes_to_remove = undef
-    }
-
 
     $changes = delete_undef_values(flatten([
-      $set_name,
-      $set_type,
       $set_additional_attributes,
-      $rm_attributes_to_remove,
     ]))
   }
 
