@@ -1,4 +1,4 @@
-# Definition: tomcat::config::context::resourcess
+# Definition: tomcat::config::context::resources
 #
 # Configure Resources elements in $CATALINA_BASE/conf/context.xml
 #
@@ -14,7 +14,7 @@
 # - An optional hash of $additional_attributes to add to the Resources. Should
 #   be of the format 'attribute' => 'value'.
 # - An optional array of $attributes_to_remove from the Connector.
-define tomcat::config::context::resourcess (
+define tomcat::config::context::resources (
   $ensure                = 'present',
   $resources_name         = $name,
   $resources_type         = undef,
