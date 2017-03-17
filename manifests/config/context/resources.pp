@@ -1,23 +1,23 @@
-# Definition: tomcat::config::context::resource
+# Definition: tomcat::config::context::resourcess
 #
-# Configure Resource elements in $CATALINA_BASE/conf/context.xml
+# Configure Resources elements in $CATALINA_BASE/conf/context.xml
 #
 # Parameters:
 # - $catalina_base is the base directory for the Tomcat installation.
 # - $ensure specifies whether you are trying to add or remove the
-#   Resource element. Valid values are 'true', 'false', 'present', and
+#   Resources element. Valid values are 'true', 'false', 'present', and
 #   'absent'. Defaults to 'present'.
-# - $resource_name is the name of the Resource to be created, relative to
+# - $resources_name is the name of the Resources to be created, relative to
 #   the java:comp/env context.
 # - $type is the fully qualified Java class name expected by the web application
-#   when it performs a lookup for this resource
-# - An optional hash of $additional_attributes to add to the Resource. Should
+#   when it performs a lookup for this resources
+# - An optional hash of $additional_attributes to add to the Resources. Should
 #   be of the format 'attribute' => 'value'.
 # - An optional array of $attributes_to_remove from the Connector.
-define tomcat::config::context::resources (
+define tomcat::config::context::resourcess (
   $ensure                = 'present',
-  $resource_name         = $name,
-  $resource_type         = undef,
+  $resources_name         = $name,
+  $resources_type         = undef,
   $catalina_base         = $::tomcat::catalina_home,
   $additional_attributes = {},
   $attributes_to_remove  = [],
@@ -28,21 +28,21 @@ define tomcat::config::context::resources (
 
   validate_re($ensure, '^(present|absent|true|false)$')
 
-  if $resource_name {
-    $_resource_name = $resource_name
+  if $resources_name {
+    $_resources_name = $resources_name
   } else {
-    $_resource_name = $name
+    $_resources_name = $name
   }
 
-  $base_path = "Context/Resource[#attribute/name='${_resource_name}']"
+  $base_path = "Context/Resources[#attribute/name='${_resources_name}']"
 
   if $ensure =~ /^(absent|false)$/ {
     $changes = "rm ${base_path}"
   } else {
     # (MODULES-3353) does this need to be quoted?
-    $set_name = "set ${base_path}/#attribute/name ${_resource_name}"
-    if $resource_type {
-      $set_type = "set ${base_path}/#attribute/type ${resource_type}"
+    $set_name = "set ${base_path}/#attribute/name ${_resources_name}"
+    if $resources_type {
+      $set_type = "set ${base_path}/#attribute/type ${resources_type}"
     } else {
       $set_type = undef
     }
@@ -67,7 +67,7 @@ define tomcat::config::context::resources (
     ]))
   }
 
-  augeas { "context-${catalina_base}-resource-${name}":
+  augeas { "context-${catalina_base}-resources-${name}":
     lens    => 'Xml.lns',
     incl    => "${catalina_base}/conf/context.xml",
     changes => $changes,
